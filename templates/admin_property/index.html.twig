@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Property index{% endblock %}
+
+{% block body %}
+    <div class="container-fluid my-4 text-center">
+        <h1 class="text-center">Administration des biens({{ count }})</h1>
+        <div class="text-right ">
+            <a href="{{ path('admin_property_new') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Créer un nouvel bien</a>
+        </div>
+        {{ knp_pagination_filter(properties, {
+            'p.city': 'Ville', 'p.price': 'Prix',
+            'p.surface': 'surface', 'p.sold': 'Vendu',
+        }) }}
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>{{ knp_pagination_sortable(properties, 'Id', 'p.id') }}</th>
+                    <th{% if properties.isSorted(['p.createdAt']) %} class="sorted" {% endif %}>
+                        {{ knp_pagination_sortable(properties, 'Date', 'p.createdAt') }}
+                    </th>
+                    {#   <th>UpdatedAt</th>#}
+                    <th{% if properties.isSorted(['p.surface']) %} class="sorted" {% endif %}>
+                        {{ knp_pagination_sortable(properties, 'Surface(m²)', 'p.surface') }}
+                    </th>
+                    <th{% if properties.isSorted(['p.room_number']) %} class="sorted" {% endif %}>
+                        {{ knp_pagination_sortable(properties, 'Pièces', 'p.room_number') }}
+                    </th>
+                    <th{% if properties.isSorted(['p.bedroom_number']) %} class="sorted" {% endif %}>
+                        {{ knp_pagination_sortable(properties, 'Chambres', 'p.bedroom_number') }}
+                    </th>
+                    <th{% if properties.isSorted(['p.floor']) %} class="sorted" {% endif %}>
+                        {{ knp_pagination_sortable(properties, 'Etages', 'p.floor') }}
+                    </th>
+                    <th{% if properties.isSorted(['p.price']) %} class="sorted" {% endif %}>
+                        {{ knp_pagination_sortable(properties, 'Prix(€)', 'p.price') }}
+                    </th>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Chauffage</th>
+                    <th>Ville</th>
+                 {#   <th>Address</th>#}
+                    <th>BP</th>
+                    <th>Vendu</th>
+                    <th>actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for property in properties %}
+                <tr>
+                    <td>#{{ property.id }}</td>
+                    <td>{{ property.createdAt ? property.createdAt|date('Y-m-d') : '' }}</td>
+                    {#<td>{{ property.updatedAt ? property.updatedAt|date('Y-m-d H:i:s') : '' }}</td>#}
+                    <td>{{ property.surface }}</td>
+                    <td>{{ property.roomNumber }}</td>
+                    <td>{{ property.bedroomNumber }}</td>
+                    <td>{{ property.floor }}</td>
+                    <td>{{ property.formattedPrice }}</td>
+                    <td>{{ property.title }}</td>
+                    <td>{{ property.excerpt }}</td>
+                    <td>{{ property.heatType }}</td>
+                    <td>{{ property.city }}</td>
+                  {#  <td>{{ property.address }}</td>#}
+                    <td>{{ property.postalCode }}</td>
+                    <td>{{ property.sold ? 'Oui' : 'Non' }}</td>
+                    <td class="d-flex">
+                        <a href="{{ path('property_show', {'id': property.id, 'slug': property.slug}) }}" title="voir ce bien"><i class="fas fa-eye mr-2"></i></a>
+                        <a href="{{ path('admin_property_edit', {'id': property.id, 'slug': property.slug}) }}" title="Editer ce bien"><i class="fas fa-pencil-alt"></i></a>
+                       {% include 'admin_property/_delete_form.html.twig' %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="17">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center">
+            {{ knp_pagination_render(properties) }}
+        </div>
+    </div>
+{% endblock %}

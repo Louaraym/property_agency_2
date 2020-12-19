@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{property.title}} {% endblock %}
+
+{% block body %}
+
+  <div class="jumbotron">
+        <div class="container">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success text-center">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% if not form.vars.valid %}
+                <div class="alert alert-danger">
+                    <p>Votre message n'a pas pu être envoyé suite à une erreur de remplissage !</p>
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-8">
+                    <div data-slider>
+                        {% if property.pictures is empty %}
+                            <img src="{{ '/images/empty.jpg' | imagine_filter('medium') }}" alt="card-img-top" style="width: 100%; height:auto;">
+                        {% else %}
+                            {% for picture in property.pictures %}
+                                <img src="{{ vich_uploader_asset(picture, 'imageFile') | imagine_filter('medium') }}" alt="card-img-top" style="width: 100%; height:auto;">
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h1>{{ property.title }}</h1>
+                    <h2>{{ property.roomNumber }} pièces -{{ property.surface }} m²</h2>
+                    <div class="text-primary" style="font-weight: bold; font-size: 2rem;">
+                        {{ property.formattedPrice }} €</div>
+                   <a href="#" class="btn btn-primary" id="contact-button" {% if form.vars.submitted %} style="display: none" {% endif %}>Contacter l'agence</a>
+                    <div id="contact-form" class="mt-4" {% if not form.vars.submitted %} style="display: none" {% endif %}>
+                        {{ form_start(form) }}
+                        <div class="row align-items-end">
+                            <div class="col">{{ form_row(form.firstName) }}</div>
+                            <div class="col">{{ form_row(form.lastName) }}</div>
+                        </div>
+                        <div class="row align-items-end">
+                            <div class="col">{{ form_row(form.phoneNumber) }}</div>
+                            <div class="col">{{ form_row(form.email) }}</div>
+                        </div>
+                        {{form_rest(form)}}
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Envoyer</button>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-4 mb-4">
+        <nav class="nav nav-tabs" id="tab"></nav>
+        <h2>Descriptif :</h2>
+        <p>
+            {{ property.description | nl2br }}
+        </p>
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Caractéristiques :</h2>
+                <table class="table-striped">
+                    <tr>
+                        <td>Surface habitable</td>
+                        <td>{{ property.surface }} m²</td>
+                    </tr>
+                    <tr>
+                        <td>Pièces</td>
+                        <td>{{ property.roomNumber }}</td>
+                    </tr>
+                    <tr>
+                        <td>Chambres</td>
+                        <td>{{ property.bedroomNumber }}</td>
+                    </tr>
+                    <tr>
+                        <td>Etage</td>
+                        <td>{{ property.floor }}</td>
+                    </tr>
+                    <tr>
+                        <td>Chaffage</td>
+                        <td>{{ property.heatType }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <h2>Spécificités :</h2>
+                <ul class="list-group">
+                    {% for option in property.options %}
+                        <li class="list-group-item">
+                            {{ option.name }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div id="map" class="mt-3" style="width: 100%; height: 400px" data-lat="{{ property.lat }}"
+                 data-lng="{{ property.lng }}">
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+   {{ encore_entry_script_tags('hiddenContactForm') }}
+{% endblock %}
